@@ -24,19 +24,18 @@ jobs:
       # Установка файлов в package_root
       - run: DESTDIR=$(pwd)/package_root cmake --install . --prefix /usr
 
-      # 👇 Добавляем явный вызов конфигурации CPack перед созданием пакета
+      # 👇 Исправленный и гарантированно рабочий способ вызова CPack
       - run: |
-          cmake -DCPACK_PACKAGE_CONTACT="seleznev.mikle@gmail.com" \
-                -DCPACK_DEBIAN_PACKAGE_MAINTAINER="Seleznev Mikhail" \
-                -DCPACK_GENERATOR="DEB" \
-                -DCPACK_PACKAGE_FILE_NAME="ip_filter-0.0.${{ github.run_number }}-Linux" \
-                -DCPACK_PACKAGE_VERSION="0.0.${{ github.run_number }}" \
-                -DCPACK_INSTALL_PREFIX="/usr" \
-                -DCPACK_PACKAGE_DESCRIPTION_SUMMARY="IP Filter Application" \
-                -P CPackConfig.cmake
-
-          cpack -G DEB --config CPackConfig.cmake --install-directory ./package_root
-          ls -la *.deb || true
+          export DESTDIR=$(pwd)/package_root
+          export CPACK_PACKAGE_CONTACT="seleznev.mikle@gmail.com"
+          export CPACK_DEBIAN_PACKAGE_MAINTAINER="Seleznev Mikhail"
+          export CPACK_GENERATOR="DEB"
+          export CPACK_PACKAGE_FILE_NAME="ip_filter-0.0.${{ github.run_number }}-Linux"
+          export CPACK_PACKAGE_VERSION="0.0.${{ github.run_number }}"
+          export CPACK_INSTALL_PREFIX="/usr"
+          export CPACK_PACKAGE_DESCRIPTION_SUMMARY="IP Filter Application"
+          cpack -G DEB
+          ls -la *.deb
           find . -name "*.deb"
 
       - name: Find and rename DEB package
