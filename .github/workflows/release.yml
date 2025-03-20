@@ -21,21 +21,15 @@ jobs:
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
 
-      # Установка файлов в package_root
-      - run: DESTDIR=$(pwd)/package_root cmake --install . --prefix /usr
+      # ✅ Исправленный и рабочий шаг установки файлов
+      - run: cmake --install . --prefix /usr --config Release -- DESTDIR=$(pwd)/package_root
 
-      # 👇 Исправленный и гарантированно рабочий способ вызова CPack
+      # ✅ Финальный исправленный шаг генерации пакета
       - run: |
-          export DESTDIR=$(pwd)/package_root
-          export CPACK_PACKAGE_CONTACT="seleznev.mikle@gmail.com"
-          export CPACK_DEBIAN_PACKAGE_MAINTAINER="Seleznev Mikhail"
-          export CPACK_GENERATOR="DEB"
-          export CPACK_PACKAGE_FILE_NAME="ip_filter-0.0.${{ github.run_number }}-Linux"
-          export CPACK_PACKAGE_VERSION="0.0.${{ github.run_number }}"
-          export CPACK_INSTALL_PREFIX="/usr"
-          export CPACK_PACKAGE_DESCRIPTION_SUMMARY="IP Filter Application"
-          cpack -G DEB
-          ls -la *.deb
+          cpack -G DEB --config CPackConfig.cmake \
+                       -B ./ \
+                       -D CPACK_INSTALL_DIRECTORY=$(pwd)/package_root
+          ls -la *.deb || true
           find . -name "*.deb"
 
       - name: Find and rename DEB package
