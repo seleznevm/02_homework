@@ -21,13 +21,13 @@ jobs:
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
 
-      # 👇 ИСПРАВЛЕННЫЙ ШАГ УСТАНОВКИ для CPACK!
-      - run: cmake --install . --prefix /usr --destdir ./package_root
+      # 👇 Исправленный шаг установки (вместо --destdir используется переменная окружения DESTDIR)
+      - run: DESTDIR=$(pwd)/package_root cmake --install . --prefix /usr
 
-      # 👇 Генерация пакета именно из подготовленного каталога установки
+      # 👇 явно формируем пакет из подготовленной папки
       - run: |
           cpack --config CPackConfig.cmake -B ./package_root
-          find . -name "*.deb" # для проверки
+          find . -name "*.deb" # проверка
 
       - name: Find and rename DEB package
         run: |
