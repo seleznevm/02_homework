@@ -1,3 +1,18 @@
 cmake_minimum_required( VERSION 3.30.1)
 
-project(ip_filter )
+project(ip_filter VERSION 0.0.$ENV{PATCH_VERSION})
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(ip_filter ip_filter.cpp)
+
+install(TARGETS ip_filter RUNTIME DESTINATION bin)
+
+include(CPack)
+
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Seleznev Mikhail")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "IP Filter Application")
+set(CPACK_PACKAGE_CONTACT "seleznev.mikle@gmail.com")
