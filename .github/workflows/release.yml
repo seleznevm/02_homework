@@ -24,8 +24,17 @@ jobs:
       # Установка файлов в package_root
       - run: DESTDIR=$(pwd)/package_root cmake --install . --prefix /usr
 
-      # 👇 Исправленный шаг генерации DEB пакета
+      # 👇 Добавляем явный вызов конфигурации CPack перед созданием пакета
       - run: |
+          cmake -DCPACK_PACKAGE_CONTACT="seleznev.mikle@gmail.com" \
+                -DCPACK_DEBIAN_PACKAGE_MAINTAINER="Seleznev Mikhail" \
+                -DCPACK_GENERATOR="DEB" \
+                -DCPACK_PACKAGE_FILE_NAME="ip_filter-0.0.${{ github.run_number }}-Linux" \
+                -DCPACK_PACKAGE_VERSION="0.0.${{ github.run_number }}" \
+                -DCPACK_INSTALL_PREFIX="/usr" \
+                -DCPACK_PACKAGE_DESCRIPTION_SUMMARY="IP Filter Application" \
+                -P CPackConfig.cmake
+
           cpack -G DEB --config CPackConfig.cmake --install-directory ./package_root
           ls -la *.deb || true
           find . -name "*.deb"
