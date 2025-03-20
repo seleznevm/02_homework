@@ -20,11 +20,17 @@ jobs:
 
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
+      - run: cmake --install . --prefix install_dir
+
       - run: cmake --build . --target package
 
       - name: Find and rename DEB package
         run: |
           deb_file=$(find . -name "*.deb" | head -n 1)
+          if [[ -z "$deb_file" ]]; then
+            echo "DEB package not found!"
+            exit 1
+          fi
           echo "Found DEB package: $deb_file"
           mv "$deb_file" "./ip_filter-0.0.${{ github.run_number }}-Linux.deb"
           ls -la *.deb
